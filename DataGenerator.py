@@ -1,5 +1,8 @@
 import csv
 import random
+import sys
+import threading
+
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
@@ -61,23 +64,25 @@ def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_dec
     W_parameters = []
     J_parameters = []
     decay_parameters = []
-    for i in tqdm(range(total_experiments), desc='total experiments'):
-        experiment_parts = []
-        L = [random.gauss(mean_decay, 2) for _ in range(qubits)]
-        W = [random.gauss(5, 2) for _ in range(qubits)]
-        J = [random.gauss(0, 0) for _ in range(qubits - 1)]
-        W_parameters.append(W)
-        J_parameters.append(J)
-        decay_parameters.append(L)
-        for t in time_stamps:
-            exp = Ramsey_ExperimentV2.RamseyExperiment(qubits, t, shots, J, W, L)
-            exp.create_full_circuit()
-            exp.add_decay_raw()
-            # exp.add_noise_raw()
-            values = exp.get_z_nearest_neighbors()
-            experiment_parts.append(values)
+    with tqdm(total=total_experiments, file=sys.stdout, dynamic_ncols=True, desc=f'Experiments for {filename}') as pbar:
+        for i in range(total_experiments):
+            experiment_parts = []
+            L = [random.gauss(mean_decay, 2) for _ in range(qubits)]
+            W = [random.gauss(5, 2) for _ in range(qubits)]
+            J = [random.gauss(0, 0) for _ in range(qubits - 1)]
+            W_parameters.append(W)
+            J_parameters.append(J)
+            decay_parameters.append(L)
+            for t in time_stamps:
+                exp = Ramsey_ExperimentV2.RamseyExperiment(qubits, t, shots, J, W, L)
+                exp.create_full_circuit()
+                exp.add_decay_raw()
+                # exp.add_noise_raw()
+                values = exp.get_z_nearest_neighbors()
+                experiment_parts.append(values)
 
-        experiments.append(experiment_parts)
+            experiments.append(experiment_parts)
+            pbar.update(1)
     create_csv_from_experiments(experiments, decay_parameters, W_parameters, J_parameters, filename)
 
 
@@ -100,10 +105,24 @@ def read_excel_to_variables(file_path):
 
 # File path for the uploaded Excel file
 file_path = 'Data_generator_template.xlsx'
+threads = []
 
 # Read and store the data from the Excel file
 variables = read_excel_to_variables(file_path)
 
 for i in range(len(variables["Qubits"])):
-    run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-                   variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+    # run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
+    #                variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+    thread = threading.Thread(target=run_experiment, args=(
+        variables["Qubits"][i],
+        variables["Total_Experiments"][i],
+        variables["Time_Stamps"][i],
+        variables["Shots"][i],
+        variables["Mean_Decay"][i],
+        variables["File_Name"][i]
+    ))
+    threads.append(thread)
+    thread.start()
+
+for thread in threads:
+    thread.join()

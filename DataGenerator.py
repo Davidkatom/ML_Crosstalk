@@ -5,7 +5,7 @@ from tqdm import tqdm
 import numpy as np
 import Ramsey_ExperimentV2
 
-total_experiments = 100
+total_experiments = 1
 total_time = 0.5 * np.pi
 measurement_amount = 2
 number_of_qubits = 2

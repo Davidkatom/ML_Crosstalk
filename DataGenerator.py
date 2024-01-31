@@ -110,23 +110,23 @@ threads = []
 # Read and store the data from the Excel file
 variables = read_excel_to_variables(file_path)
 
-# for i in range(len(variables["Qubits"])):
-#     # run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-#     #                variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
-#     thread = threading.Thread(target=run_experiment, args=(
-#         variables["Qubits"][i],
-#         variables["Total_Experiments"][i],
-#         variables["Time_Stamps"][i],
-#         variables["Shots"][i],
-#         variables["Mean_Decay"][i],
-#         variables["File_Name"][i]
-#     ))
-#     threads.append(thread)
-#     thread.start()
-#
-# for thread in threads:
-#     thread.join()
-
 for i in range(len(variables["Qubits"])):
-    run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-                    variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+    # run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
+    #                variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+    thread = threading.Thread(target=run_experiment, args=(
+        variables["Qubits"][i],
+        variables["Total_Experiments"][i],
+        variables["Time_Stamps"][i],
+        variables["Shots"][i],
+        variables["Mean_Decay"][i],
+        variables["File_Name"][i]
+    ))
+    threads.append(thread)
+    thread.start()
+
+for thread in threads:
+    thread.join()
+
+# for i in range(len(variables["Qubits"])):
+#     run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
+#                     variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])

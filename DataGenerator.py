@@ -130,3 +130,4 @@ for thread in threads:
 # for i in range(len(variables["Qubits"])):
 #     run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
 #                     variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+print("Done!")

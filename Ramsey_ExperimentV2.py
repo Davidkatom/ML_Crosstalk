@@ -16,32 +16,6 @@ service = QiskitRuntimeService(
 )
 
 h = lambda n, J, z: sum([J[i] * 0.25 * (z[i] - 1) * (z[(i + 1)] - 1) for i in range(n - 1)])
-
-# prob_1 = 0.001  # 1-qubit gate
-# prob_2 = 0.01  # 2-qubit gate
-#
-# T1 = [0,1,2,3,4]
-# T2 = [0,1,2,3,4]
-#
-# # Depolarizing quantum errors
-# error_1 = noise.depolarizing_error(prob_1, 1)
-# error_2 = noise.depolarizing_error(prob_2, 2)
-#
-# # Add errors to noise model
-# noise_model = noise.NoiseModel()
-# noise_model.add_all_qubit_quantum_error(error_1, ['u1', 'u2', 'u3'])
-# noise_model.add_all_qubit_quantum_error(error_2, ['cx'])
-#
-#
-# # Get basis gates from noise model
-# basis_gates = noise_model.basis_gates
-# backend = AerSimulator(noise_model=noise_model,
-#                        basis_gates=basis_gates)
-
-# backend = service.backend("ibm_osaka")
-# noise_model = NoiseModel.from_backend(backend)
-# sim_noise = AerSimulator(noise_model=noise_model)
-# passmanager = generate_preset_pass_manager(optimization_level=0, backend=sim_noise)
 def effective_hem(size, J, W):
     hem = np.zeros((2 ** size, 2 ** size))
     for i in range(2 ** size):
@@ -195,13 +169,6 @@ class RamseyExperiment:
         self.z = self._get_z_exp()
 
     def _run(self):
-        # service = QiskitRuntimeService()
-        # backend = service.backend("ibm_osaka")
-        # noise_model = NoiseModel.from_backend(backend)
-
-        # circ_tnoise = passmanager.run(self.circuit)
-        # job = sim_noise.run(circ_tnoise)
-
         job = execute(self.circuit, Aer.get_backend("qasm_simulator"), shots=self.shots)
         # self.raw_data = job.result().get_memory()
         self.raw_data = self.get_raw_from_counts(job.result().get_counts())

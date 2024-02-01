@@ -1,4 +1,5 @@
 import csv
+import multiprocessing
 import random
 import sys
 import threading
@@ -110,24 +111,62 @@ threads = []
 # Read and store the data from the Excel file
 variables = read_excel_to_variables(file_path)
 
-for i in range(len(variables["Qubits"])):
-    # run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-    #                variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
-    thread = threading.Thread(target=run_experiment, args=(
-        variables["Qubits"][i],
-        variables["Total_Experiments"][i],
-        variables["Time_Stamps"][i],
-        variables["Shots"][i],
-        variables["Mean_Decay"][i],
-        variables["File_Name"][i]
-    ))
-    threads.append(thread)
-    thread.start()
-
-for thread in threads:
-    thread.join()
 
 # for i in range(len(variables["Qubits"])):
+#     # run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
+#     #                variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+#     thread = threading.Thread(target=run_experiment, args=(
+#         variables["Qubits"][i],
+#         variables["Total_Experiments"][i],
+#         variables["Time_Stamps"][i],
+#         variables["Shots"][i],
+#         variables["Mean_Decay"][i],
+#         variables["File_Name"][i]
+#     ))
+#     threads.append(thread)
+#     thread.start()
+#
+# for thread in threads:
+#     thread.join()
+#
+# for i in range(len(variables["Qubits"])):
 #     run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-#                     variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
-print("Done!")
+#                    variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+#
+
+def process_experiment(args):
+    run_experiment(*args)
+
+
+def main():
+    # Prepare the arguments for each experiment
+    experiment_args = [
+        (
+            variables["Qubits"][i],
+            variables["Total_Experiments"][i],
+            variables["Time_Stamps"][i],
+            variables["Shots"][i],
+            variables["Mean_Decay"][i],
+            variables["File_Name"][i]
+        )
+        for i in range(len(variables["Qubits"]))
+    ]
+
+    # Create a list to hold the processes
+    processes = []
+
+    # Create and start a process for each set of arguments
+    for args in experiment_args:
+        process = multiprocessing.Process(target=process_experiment, args=(args,))
+        processes.append(process)
+        process.start()
+
+    # Wait for all processes to complete
+    for process in processes:
+        process.join()
+
+    print("Done!")
+
+
+if __name__ == '__main__':
+    main()

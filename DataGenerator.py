@@ -8,8 +8,6 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import Ramsey_ExperimentV2
-from tqdm_multiprocess import TqdmMultiProcessPool
-
 # total_experiments = 1
 total_time = 0.5 * np.pi
 

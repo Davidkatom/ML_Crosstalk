@@ -8,6 +8,7 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import Ramsey_ExperimentV2
+from tqdm_multiprocess import TqdmMultiProcessPool
 
 # total_experiments = 1
 total_time = 0.5 * np.pi
@@ -66,12 +67,12 @@ def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_dec
     W_parameters = []
     J_parameters = []
     decay_parameters = []
-    with tqdm(total=total_experiments, file=sys.stdout, dynamic_ncols=True, desc=f'Experiments for {filename}') as pbar:
+    with tqdm_func(total=total_experiments, file=sys.stdout, dynamic_ncols=True, desc=f'Experiments for {filename}') as pbar:
         for i in range(total_experiments):
             experiment_parts = []
             L = [random.gauss(mean_decay, 2) for _ in range(qubits)]
             W = [random.gauss(5, 2) for _ in range(qubits)]
-            J = [random.gauss(0, 0) for _ in range(qubits - 1)]
+            J = [random.gauss(5, 2) for _ in range(qubits - 1)]
             W_parameters.append(W)
             J_parameters.append(J)
             decay_parameters.append(L)

@@ -24,7 +24,8 @@ total_time = 0.5 * np.pi
 def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_decay, filename='experiments.csv'):
     experiments = []
 
-    time_stamps = np.linspace(0, total_time, total_time_stamps)
+    time_stamps = np.linspace(0, total_time, total_time_stamps+1)
+    np.delete(time_stamps, 0)
 
     def create_csv_from_experiments(experiments, decay, W, J, filename):
         # Open the file in write mode

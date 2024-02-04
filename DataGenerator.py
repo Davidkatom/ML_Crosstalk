@@ -25,7 +25,7 @@ total_time = 0.5 * np.pi
 def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_decay, filename='experiments.csv'):
     experiments = []
 
-    time_stamps = np.linspace(0, total_time, total_time_stamps+1)
+    time_stamps = np.linspace(0, total_time, total_time_stamps + 1)
     np.delete(time_stamps, 0)
 
     def create_csv_from_experiments(experiments, decay, W, J, filename):
@@ -67,7 +67,7 @@ def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_dec
     W_parameters = []
     J_parameters = []
     decay_parameters = []
-    with tqdm_func(total=total_experiments, file=sys.stdout, dynamic_ncols=True, desc=f'Experiments for {filename}') as pbar:
+    with tqdm(total=total_experiments, file=sys.stdout, dynamic_ncols=True, desc=f'Experiments for {filename}') as pbar:
         for i in range(total_experiments):
             experiment_parts = []
             L = [random.gauss(mean_decay, 2) for _ in range(qubits)]
@@ -114,12 +114,6 @@ threads = []
 variables = read_excel_to_variables(file_path)
 
 
-#
-# for i in range(len(variables["Qubits"])):
-#     run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-#                    variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
-#
-
 def process_experiment(args):
     run_experiment(*args)
 
@@ -138,18 +132,25 @@ def main():
         for i in range(len(variables["Qubits"]))
     ]
 
+    #
+    # for i in range(len(variables["Qubits"])):
+    #     run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
+    #                    variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
+    #
+
     # Create a list to hold the processes
     processes = []
-
+    pool = multiprocessing.Pool(processes=len(experiment_args))
     # Create and start a process for each set of arguments
     for args in experiment_args:
         process = multiprocessing.Process(target=process_experiment, args=(args,))
         processes.append(process)
         process.start()
+        #pool.apply_async(process_experiment, args=(args,))
 
     # Wait for all processes to complete
     for process in processes:
-        process.join()
+         process.join()
 
     print("Done!")
 

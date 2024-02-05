@@ -6,7 +6,15 @@ from IPython.display import clear_output
 import os
 import re
 
-
+def super_plot(xl='x', yl='f(x)', title='', base_size=16, xtickx_size=16):
+    # base_size =20
+    plt.xlabel(xl, fontsize=base_size + 4)
+    plt.ylabel(yl, fontsize=base_size + 4)
+    plt.title(title, fontsize=base_size + 3)
+    plt.legend(fontsize=base_size - 2, frameon=False)
+    plt.xticks(fontsize=xtickx_size + 4)
+    plt.tick_params(axis='both', which='major', labelsize=xtickx_size)
+    plt.show()
 # The following lines adjust the granularity of reporting.
 pd.options.display.max_rows = 10
 pd.options.display.float_format = "{:.1f}".format

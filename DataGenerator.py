@@ -8,6 +8,7 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import Ramsey_ExperimentV2
+
 # total_experiments = 1
 total_time = 0.5 * np.pi
 
@@ -20,7 +21,8 @@ total_time = 0.5 * np.pi
 # file_name = 'experiments.csv'
 
 
-def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_decay, filename='experiments.csv'):
+def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay,
+                   filename='experiments.csv'):
     experiments = []
 
     time_stamps = np.linspace(0, total_time, total_time_stamps + 1)
@@ -65,7 +67,8 @@ def run_experiment(qubits, total_experiments, total_time_stamps, shots, mean_dec
     W_parameters = []
     J_parameters = []
     decay_parameters = []
-    with tqdm(total=total_experiments, file=sys.stdout, dynamic_ncols=True, desc=f'Experiments for {filename}') as pbar:
+    with tqdm(total=total_experiments, file=sys.stdout, dynamic_ncols=True, position=position,
+              desc=f'Experiments for {filename}') as pbar:
         for i in range(total_experiments):
             experiment_parts = []
             L = [random.gauss(mean_decay, 2) for _ in range(qubits)]
@@ -130,25 +133,19 @@ def main():
         for i in range(len(variables["Qubits"]))
     ]
 
-    #
-    # for i in range(len(variables["Qubits"])):
-    #     run_experiment(variables["Qubits"][i], variables["Total_Experiments"][i], variables["Time_Stamps"][i],
-    #                    variables["Shots"][i], variables["Mean_Decay"][i], filename=variables["File_Name"][i])
-    #
-
     # Create a list to hold the processes
     processes = []
-    pool = multiprocessing.Pool(processes=len(experiment_args))
     # Create and start a process for each set of arguments
-    for args in experiment_args:
+    for i, args in enumerate(experiment_args):
+        args = (i,) + args
         process = multiprocessing.Process(target=process_experiment, args=(args,))
         processes.append(process)
         process.start()
-        #pool.apply_async(process_experiment, args=(args,))
+        # pool.apply_async(process_experiment, args=(args,))
 
     # Wait for all processes to complete
     for process in processes:
-         process.join()
+        process.join()
 
     print("Done!")
 

@@ -244,6 +244,26 @@ class RamseyExperiment:
             values.append(self.get_zn_exp(pauli_string, counts=counts))
         return values
 
+    def get_n_nearest_neighbors(self, n_neighbors, counts=None):
+        # This function generates Pauli strings for single qubits and n nearest neighbors
+        pauli_strings = []
+
+        # Single qubit measurements
+        for i in range(self.n):
+            pauli_str = 'I' * i + 'Z' + 'I' * (self.n - i - 1)
+            pauli_strings.append(pauli_str)
+
+        # n nearest neighbor pairs
+        for distance in range(1, n_neighbors + 1):
+            for i in range(self.n - distance):
+                pauli_str = 'I' * i + 'Z' + 'I' * (distance - 1) + 'Z' + 'I' * (self.n - i - distance - 1)
+                pauli_strings.append(pauli_str)
+
+        values = []
+        for pauli_string in pauli_strings:
+            values.append(self.get_zn_exp(pauli_string, counts=counts))
+        return values
+
     def get_zn_exp(self, pauli_string, counts=None):
         """
         Calculate the expectation value of an observable represented by a Pauli string,

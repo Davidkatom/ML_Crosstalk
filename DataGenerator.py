@@ -135,7 +135,7 @@ def main():
 
     # Create a list to hold the processes
     processes = []
-    # Create and start a process for each set of arguments
+    # Create and start a process for each set of argumentsf
     for i, args in enumerate(experiment_args):
         args = (i,) + args
         process = multiprocessing.Process(target=process_experiment, args=(args,))

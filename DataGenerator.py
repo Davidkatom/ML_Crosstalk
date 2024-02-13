@@ -21,7 +21,7 @@ total_time = 0.5 * np.pi
 # file_name = 'experiments.csv'
 
 
-def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay,
+def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay,correlations,
                    filename='experiments.csv'):
     experiments = []
 
@@ -82,7 +82,7 @@ def run_experiment(position, qubits, total_experiments, total_time_stamps, shots
                 exp.create_full_circuit()
                 exp.add_decay_raw()
                 # exp.add_noise_raw()
-                values = exp.get_z_nearest_neighbors()
+                values = exp.get_n_nearest_neighbors(correlations)
                 experiment_parts.append(values)
 
             experiments.append(experiment_parts)

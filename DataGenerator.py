@@ -21,12 +21,12 @@ total_time = 0.5 * np.pi
 # file_name = 'experiments.csv'
 
 
-def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay,correlations,
+def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay, mean_w, mean_j,std,correlations,
                    filename='experiments.csv'):
     experiments = []
 
     time_stamps = np.linspace(0, total_time, total_time_stamps + 1)
-    np.delete(time_stamps, 0)
+    time_stamps = np.delete(time_stamps, 0)
 
     def create_csv_from_experiments(experiments, decay, W, J, filename):
         # Open the file in write mode
@@ -71,9 +71,9 @@ def run_experiment(position, qubits, total_experiments, total_time_stamps, shots
               desc=f'Experiments for {filename}') as pbar:
         for i in range(total_experiments):
             experiment_parts = []
-            L = [random.gauss(mean_decay, 2) for _ in range(qubits)]
-            W = [random.gauss(5, 2) for _ in range(qubits)]
-            J = [random.gauss(5, 2) for _ in range(qubits - 1)]
+            L = [random.gauss(mean_decay, std) for _ in range(qubits)]
+            W = [random.gauss(mean_w, std) for _ in range(qubits)]
+            J = [random.gauss(mean_j, std) for _ in range(qubits - 1)]
             W_parameters.append(W)
             J_parameters.append(J)
             decay_parameters.append(L)
@@ -109,7 +109,6 @@ def read_excel_to_variables(file_path):
 
 # File path for the uploaded Excel file
 file_path = 'Data_generator_template.xlsx'
-threads = []
 
 # Read and store the data from the Excel file
 variables = read_excel_to_variables(file_path)
@@ -128,6 +127,10 @@ def main():
             variables["Time_Stamps"][i],
             variables["Shots"][i],
             variables["Mean_Decay"][i],
+            variables["Mean_W"][i],
+            variables["Mean_J"][i],
+            variables["Std"][i],
+            variables["Correlations"][i],
             variables["File_Name"][i]
         )
         for i in range(len(variables["Qubits"]))

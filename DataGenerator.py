@@ -145,9 +145,6 @@ def main():
 
     # Create a list to hold the processes
     processes = []
-
-    variables["File_Name"] = [f"{directory_name_current_datetime_with_minutes}/{name}" for name in
-                              variables["File_Name"]]
     # Create and start a process for each set of argumentsf
     for i, args in enumerate(experiment_args):
         args = (i,) + args

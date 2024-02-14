@@ -1,5 +1,7 @@
 import csv
+from datetime import datetime
 import multiprocessing
+import os
 import random
 import sys
 import threading
@@ -21,7 +23,8 @@ total_time = 0.5 * np.pi
 # file_name = 'experiments.csv'
 
 
-def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay, mean_w, mean_j,std,correlations,
+def run_experiment(position, qubits, total_experiments, total_time_stamps, shots, mean_decay, mean_w, mean_j, std,
+                   correlations,
                    filename='experiments.csv'):
     experiments = []
 
@@ -30,7 +33,7 @@ def run_experiment(position, qubits, total_experiments, total_time_stamps, shots
 
     def create_csv_from_experiments(experiments, decay, W, J, filename):
         # Open the file in write mode
-        filename = "Data/" + filename + ".csv"
+        filename = filename + ".csv"
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             # Create a CSV writer
             csv_writer = csv.writer(file)
@@ -120,6 +123,10 @@ def process_experiment(args):
 
 def main():
     # Prepare the arguments for each experiment
+    current_datetime_with_minutes = datetime.now().strftime('%Y-%m-%d_%H-%M')
+    directory_name_current_datetime_with_minutes = f"Data/{current_datetime_with_minutes}"
+    os.makedirs(directory_name_current_datetime_with_minutes, exist_ok=False)
+
     experiment_args = [
         (
             variables["Qubits"][i],
@@ -131,13 +138,16 @@ def main():
             variables["Mean_J"][i],
             variables["Std"][i],
             variables["Correlations"][i],
-            variables["File_Name"][i]
+            directory_name_current_datetime_with_minutes + "/" + variables["File_Name"][i]
         )
         for i in range(len(variables["Qubits"]))
     ]
 
     # Create a list to hold the processes
     processes = []
+
+    variables["File_Name"] = [f"{directory_name_current_datetime_with_minutes}/{name}" for name in
+                              variables["File_Name"]]
     # Create and start a process for each set of argumentsf
     for i, args in enumerate(experiment_args):
         args = (i,) + args

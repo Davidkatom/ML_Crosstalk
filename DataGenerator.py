@@ -28,6 +28,7 @@ def run_experiment(position, qubits, total_experiments, total_time_stamps, shots
                    filename='experiments.csv'):
     experiments = []
 
+    scale = 0.05
     time_stamps = np.linspace(0, total_time, total_time_stamps + 1)
     time_stamps = np.delete(time_stamps, 0)
 
@@ -50,6 +51,7 @@ def run_experiment(position, qubits, total_experiments, total_time_stamps, shots
                 header.append(f'W_{i}')
             for i in range(len(J[0])):
                 header.append(f'J_{i}')
+            header.append('noise')
 
             # Write the header
             csv_writer.writerow(header)
@@ -65,6 +67,7 @@ def run_experiment(position, qubits, total_experiments, total_time_stamps, shots
                     row.append(k)
                 for k in J[j]:
                     row.append(k)
+                row.append(1/np.sqrt(shots))
                 csv_writer.writerow(row)
 
     W_parameters = []
